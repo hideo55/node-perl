@@ -1,0 +1,6 @@
+{"name" : "perl",
+ "description" : "Embeded perl interpreter",
+ "version" : "0.0.1",
+ "main" : "./perl",
+ "scripts" : { "build" : "node-waf configure build" }
+}
