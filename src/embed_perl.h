@@ -19,21 +19,14 @@ class EmbedPerl {
 public:
 
 	EmbedPerl() {
-		/*
-		interp = perl_alloc();
-		PERL_SET_CONTEXT(interp);
-		PL_perl_destruct_level = 1;
-		perl_construct(interp);
-		PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
-		*/
+		perl = perl_alloc();
+		perl_construct(perl);
 	}
 
 	~EmbedPerl() {
-		/*
-		PL_perl_destruct_level = 1;
-		perl_destruct(interp);
-		perl_free(interp);
-		*/
+		PL_perl_destruct_level = 2;
+		perl_destruct(perl);
+		perl_free(perl);
 	}
 
 	int run(int argc, const std::string *argv, std::string *out,
@@ -43,13 +36,8 @@ public:
 
 		PERL_SYS_INIT3(&argc, (char ***) &argv, (char ***) NULL);
 
-		interp = perl_alloc();
-		PERL_SET_CONTEXT(interp);
-		PL_perl_destruct_level = 1;
-		perl_construct(interp);
-		PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
-
-		exitstatus = perl_parse(interp, xs_init, argc, (char **) argv,
+		PL_perl_destruct_level = 2;
+		exitstatus = perl_parse(perl, xs_init, argc, (char **) argv,
 				(char **) NULL);
 		if (exitstatus != 0) {
 			return exitstatus;
@@ -63,7 +51,7 @@ public:
 		this->override_stdhandle(outsv, "STDOUT");
 		this->override_stdhandle(errsv, "STDERR");
 
-		perl_run(interp);
+		perl_run(perl);
 
 		this->restore_stdhandle("STDOUT");
 		this->restore_stdhandle("STDERR");
@@ -78,10 +66,6 @@ public:
 
 		FREETMPS;LEAVE;
 
-		PL_perl_destruct_level = 1;
-		perl_destruct(interp);
-		perl_free(interp);
-
 		PERL_SYS_TERM();
 
 		return 0;
@@ -89,7 +73,7 @@ public:
 
 private:
 
-	PerlInterpreter *interp;
+	PerlInterpreter *perl;
 
 void override_stdhandle (pTHX_ SV *sv,const char *name ) {
 	int status;

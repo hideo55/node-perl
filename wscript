@@ -11,7 +11,7 @@ def configure(conf):
     conf.check_tool('compiler_cxx')
     conf.check_tool('node_addon')
     conf.env.append_unique('CXXFLAGS',Utils.cmd_output('perl -MExtUtils::Embed -e ccopts').split())
-    conf.env.append_unique('CXXFLAGS',['-Dusethreads'])
+    conf.env.append_unique('CXXFLAGS',['-Duseithreads'])
     conf.env.append_unique('LINKFLAGS',Utils.cmd_output('perl -MExtUtils::Embed -e ldopts').split())
     Utils.exec_command('perl -MExtUtils::Embed -e xsinit -- -o src/perlxsi.c')
 
