@@ -3,6 +3,14 @@ node-perl
 
 Embed Perl interpreter for node.js
 
+## Install
+
+    #>git clone git://github.com/hideo55/node-perl.git
+    #>cd node-perl
+    #>node-waf configure
+    #>node-waf build
+    #>node-waf install
+
 ## Tutorial
 
     var Perl = require('perl').Perl();
