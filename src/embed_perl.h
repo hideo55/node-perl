@@ -2,6 +2,7 @@
 #define EMBED_PERL_H_
 
 #include <string>
+#include <iostream>
 extern "C" {
 #define PERLIO_NOT_STDIO 0
 #define USE_PERLIO
@@ -20,11 +21,13 @@ public:
 
 	EmbedPerl() {
 		perl = perl_alloc();
+		PERL_SET_CONTEXT(perl);
 		perl_construct(perl);
 	}
 
 	~EmbedPerl() {
 		PL_perl_destruct_level = 2;
+		PERL_SET_CONTEXT(perl);
 		perl_destruct(perl);
 		perl_free(perl);
 	}
@@ -37,6 +40,7 @@ public:
 		PERL_SYS_INIT3(&argc, (char ***) &argv, (char ***) NULL);
 
 		PL_perl_destruct_level = 2;
+		PERL_SET_CONTEXT(perl);
 		exitstatus = perl_parse(perl, xs_init, argc, (char **) argv,
 				(char **) NULL);
 		if (exitstatus != 0) {
@@ -56,13 +60,13 @@ public:
 		this->restore_stdhandle("STDOUT");
 		this->restore_stdhandle("STDERR");
 
-		STRLEN outlen = SvCUR(outsv);
-		char *tmpout = SvPV_nolen(outsv);
-		*out = tmpout;
+		STRLEN len;
+		char *tmpout = SvPV(outsv, len);
+		out->append((const char *)tmpout,len);
 
-		STRLEN errlen = SvCUR(errsv);
-		char * tmperr = SvPV_nolen(errsv);
-		*err = tmperr;
+		char *tmperr= SvPV(errsv, len);
+		err->append((const char *)tmperr,len);
+
 
 		FREETMPS;LEAVE;
 
@@ -74,6 +78,10 @@ public:
 private:
 
 	PerlInterpreter *perl;
+
+void interp_new () {
+
+}
 
 void override_stdhandle (pTHX_ SV *sv,const char *name ) {
 	int status;
