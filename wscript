@@ -1,4 +1,6 @@
-import Utils
+import Options, Utils
+from os import unlink, symlink, popen
+from os.path import exists, lexists
 
 srcdir = '.'
 blddir = 'build'
@@ -20,3 +22,10 @@ def build(bld):
     obj.target = 'perl'
     obj.source = './src/perlxsi.c ./src/perl_bindings.cc'
 
+def shutdown():
+  t = 'perl.node'
+  if Options.commands['clean']:
+    if lexists(t): unlink(t)
+  else:
+    if exists('build/default/' + t) and not lexists(t):
+      symlink('build/default/' + t, t)
