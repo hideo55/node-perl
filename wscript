@@ -15,7 +15,6 @@ def configure(conf):
     conf.env.append_unique('CXXFLAGS',Utils.cmd_output('perl -MExtUtils::Embed -e ccopts').split())
     conf.env.append_unique('CXXFLAGS',['-Duseithreads'])
     conf.env.append_unique('LINKFLAGS',Utils.cmd_output('perl -MExtUtils::Embed -e ldopts').split())
-    Utils.exec_command('perl -MExtUtils::Embed -e xsinit -- -o src/perlxsi.c')
 
 def build(bld):
     obj = bld.new_task_gen('cxx', 'shlib', 'node_addon')

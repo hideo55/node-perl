@@ -1,3 +1,5 @@
 /src/perlxsi.c
 /.project
 /.cproject
+/.lock-wscript
+/build
