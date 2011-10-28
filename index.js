@@ -7,3 +7,4 @@ try {
 }
 
 exports.Perl = binding.Perl;
+exports.version = binding.version;

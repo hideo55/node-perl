@@ -208,4 +208,5 @@ extern "C" void init(Handle<Object> target) {
     NODE_SET_PROTOTYPE_METHOD(t, "RunAsync", NodePerl::RunAsync);
     t->InstanceTemplate()->SetInternalFieldCount(1);
     target->Set(String::New("Perl"), t->GetFunction());
+    target->Set(String::New("version"), String::New("0.0.1"));
 }
