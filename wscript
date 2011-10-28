@@ -21,17 +21,6 @@ def build(bld):
     obj.target = 'perl'
     obj.source = './src/perlxsi.c ./src/perl_bindings.cc'
 
-def shutdown():
-  t = 'perl.node'
-  node_version = Utils.cmd_output('node --version')
-  if Options.commands['clean']:
-    if lexists(t): unlink(t)
-  else:
-    v = ( Utils.cmd_output('node --version').split('.') )[1]
-    print v
-    if v >= 5 :
-      if exists('build/default/' + t) and not lexists(t):
-        symlink('build/default/' + t, t)
-    else:
-      if exists('build/Release/' + t) and not lexists(t):
-        symlink('build/Release/' + t, t)
+def test(tst):
+  test_binary = 'node'
+  Utils.exec_command(test_binary + ' test.js')

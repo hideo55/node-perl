@@ -1,6 +1,17 @@
-{"name" : "perl",
- "description" : "Embeded perl interpreter",
- "version" : "0.0.1",
- "main" : "./perl",
- "scripts" : { "build" : "node-waf configure build" }
+{
+  "name" : "perl",
+  "description" : "Embeded perl interpreter",
+  "version" : "0.0.1",
+  "main" : "index",
+  "scripts" : { 
+    "build" : "node-waf configure build",
+    "test" : "node-waf test"
+  },
+  "engines": {
+    "node": ">=0.4.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/hideo55/node-perl.git"
+  },
 }
