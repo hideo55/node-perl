@@ -67,7 +67,7 @@ public:
         Unwrap<NodePerl> (args.This())->process_run_args(args, &argc, &argv);
         REQ_FUN_ARG(1,callback);
 
-        PerlRunArgs *pargs = (PerlRunArgs *) malloc(sizeof(PerlRunArgs));
+        PerlRunArgs *pargs = new PerlRunArgs;
         pargs->node_perl = Unwrap<NodePerl> (args.This());
         pargs->argc = argc;
         pargs->argv = argv;
@@ -165,7 +165,7 @@ private:
 #else
     static int EIO_Run(eio_req *req) {
 #endif
-        PerlRunArgs *data = (PerlRunArgs *) (req->data);
+        PerlRunArgs *data = reinterpret_cast<PerlRunArgs *>(req->data);
         req->result = data->node_perl->Run(data->argc, data->argv,
                 data->stdout, data->stderr);
 
@@ -179,9 +179,9 @@ private:
 
         ev_unref( EV_DEFAULT_UC);
 
-        PerlRunArgs *data = (PerlRunArgs *) (req->data);
+        PerlRunArgs *data = reinterpret_cast<PerlRunArgs *>(req->data);
 
-        Local<Value> argv[3];
+        Handle<Value> argv[3];
         argv[0] = req->result < 0 ? Local<Value>::New(String::New("Error"))
                 : Local<Value>::New(Undefined());
         argv[1] = Local<Value>::New(String::New(data->stdout->c_str()));
@@ -195,6 +195,7 @@ private:
         delete[] data->argv;
         delete data->stdout;
         delete data->stderr;
+        delete data;
 
         return 0;
     }
