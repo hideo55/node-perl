@@ -7,6 +7,7 @@ extern "C" {
 #define USE_PERLIO
 #include <EXTERN.h>
 #include <perl.h>
+#include "ppport.h"
 }
 
 #ifdef New
@@ -29,8 +30,8 @@ public:
 		perl_free(perl);
 	}
 
-	int run(int argc, const std::string *argv, std::string *out,
-			std::string *err) {
+	int run(int argc, const std::string *argv, std::string& out,
+			std::string& err) {
 
 		int exitstatus = 0;
 
@@ -48,21 +49,21 @@ public:
 		SV *outsv = sv_newmortal();
 		SV *errsv = sv_newmortal();
 
-		this->override_stdhandle(outsv, "STDOUT");
-		this->override_stdhandle(errsv, "STDERR");
+		this->override_stdhandle(aTHX_ outsv, "STDOUT");
+		this->override_stdhandle(aTHX_ errsv, "STDERR");
 
 		perl_run(perl);
 
-		this->restore_stdhandle("STDOUT");
-		this->restore_stdhandle("STDERR");
+		this->restore_stdhandle(aTHX_ "STDOUT");
+		this->restore_stdhandle(aTHX_ "STDERR");
 
 		STRLEN outlen = SvCUR(outsv);
 		char *tmpout = SvPV_nolen(outsv);
-		*out = tmpout;
+		out = std::string(tmpout, outlen);
 
 		STRLEN errlen = SvCUR(errsv);
 		char * tmperr = SvPV_nolen(errsv);
-		*err = tmperr;
+		err = std::string(tmperr, errlen);
 
 		FREETMPS;LEAVE;
 
