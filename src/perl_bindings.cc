@@ -1,3 +1,5 @@
+#define BUILDING_NODE_EXTENSION
+
 #include <node.h>
 #include <string>
 #include <vector>
@@ -6,8 +8,9 @@
 #define INTERPRETER_NAME "node-perl"
 
 using namespace v8;
+using namespace node;
 
-class NodePerl: node::ObjectWrap {
+class NodePerl: ObjectWrap {
 public:
 
     NodePerl() {
@@ -20,11 +23,11 @@ public:
         if (!args.IsConstructCall())
             return args.Callee()->NewInstance();
         try {
-            (new NodePerl())->Wrap(args.This());
+            (new NodePerl())->Wrap(args.Holder());
         } catch (const char *msg) {
             return ThrowException(Exception::Error(String::New(msg)));
         }
-        return args.This();
+        return scope.Close(args.Holder());
     }
 
     static Handle<Value> Run(const Arguments& args) {
