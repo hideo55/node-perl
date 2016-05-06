@@ -20,14 +20,14 @@ class EmbedPerl {
 public:
 
 	EmbedPerl() {
-		perl = perl_alloc();
-		perl_construct(perl);
+		my_perl = perl_alloc();
+		perl_construct(my_perl);
 	}
 
 	~EmbedPerl() {
 		PL_perl_destruct_level = 2;
-		perl_destruct(perl);
-		perl_free(perl);
+		perl_destruct(my_perl);
+		perl_free(my_perl);
 	}
 
 	int run(int argc, const std::string *argv, std::string& out,
@@ -38,7 +38,7 @@ public:
 		PERL_SYS_INIT3(&argc, (char ***) &argv, (char ***) NULL);
 
 		PL_perl_destruct_level = 2;
-		exitstatus = perl_parse(perl, xs_init, argc, (char **) argv,
+		exitstatus = perl_parse(my_perl, xs_init, argc, (char **) argv,
 				(char **) NULL);
 		if (exitstatus != 0) {
 			return exitstatus;
@@ -52,7 +52,7 @@ public:
 		this->override_stdhandle(aTHX_ outsv, "STDOUT");
 		this->override_stdhandle(aTHX_ errsv, "STDERR");
 
-		perl_run(perl);
+		perl_run(my_perl);
 
 		this->restore_stdhandle(aTHX_ "STDOUT");
 		this->restore_stdhandle(aTHX_ "STDERR");
@@ -74,7 +74,7 @@ public:
 
 private:
 
-	PerlInterpreter *perl;
+	PerlInterpreter *my_perl;
 
 void override_stdhandle (pTHX_ SV *sv,const char *name ) {
 	int status;
